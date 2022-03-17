@@ -11,17 +11,18 @@ t_sent = 0
 t_test = rospy.get_time()
 trigger_state1 = 0
 trigger_state2 =0
-arduino = serial.Serial(port='/dev/ttyACM3', baudrate=19200, timeout=.1)
+arduino = serial.Serial(port='/dev/ttyACM1', baudrate=19200, timeout=.1)
 pub = rospy.Publisher("trigger_publisher", Int16 )
 pub1 = rospy.Publisher('latency_time', Float64)
 t_light  =0
 def call_back_1(data):
-	print(data.data)
+	#print(data.data)
 	if data.data==1 and trigger_state1==0:
 		global t_sent
+		
+		arduino.writelines('a')
 		t_sent =rospy.get_time()
-		arduino.writelines('y')
-		print(t_sent)
+		#print(t_sent)
 		#t_new =rospy.get_time()
 		#print(t_sent-t_new)
 		#print(t_sent -t_test)
@@ -30,14 +31,14 @@ def call_back_1(data):
 def call_back_2(data):
 	global trigger_state2
 	global t_light
-	if data.data > .012 and trigger_state2==0:
+	if data.data > .025 and trigger_state2==0:
 		t_light =  rospy.get_time()
 		lat=t_light-t_sent
 		print(lat)
 		#print(t_light)
 		#print("t sent is" + str(t_sent))
 		trigger_state2=1
-	elif data.data <.015 and trigger_state2==1:
+	elif data.data <.010 and trigger_state2==1:
 		trigger_state2=0
 
 def listener():
